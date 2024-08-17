@@ -12,3 +12,5 @@ books.all()
 
 # Retrieve the librarian for a library
 Librarian.objects.get(library='library_name')
+
+objects.filter(author=author)
