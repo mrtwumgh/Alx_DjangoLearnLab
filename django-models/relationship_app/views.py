@@ -7,7 +7,7 @@ def list_books(request):
     context = {
         'book_list': Book.objects.all()
     }
-    return render(request, 'relationship_app/list_book.html', context)
+    return render(request, 'relationship_app/list_books.html', context)
 
 class LibraryDetail(ListView):
     model = Library
