@@ -18,7 +18,7 @@ class Book(models.Model):
     publication_year = models.IntegerField()
 
 
-class MyUserManager(BaseUserManager):
+class CustomUserManager(BaseUserManager):
     def create_user(self, username, email, date_of_birth, profile_photo, password=None):
         if not email:
             raise ValueError("User must have an email address")
