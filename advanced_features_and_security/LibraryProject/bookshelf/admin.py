@@ -18,3 +18,4 @@ class MyUserAdmin(UserAdmin):
 admin.site.register(Book, BookAdmin)
 
 admin.site.register(MyUser, MyUserAdmin)
+# Register your models here.
