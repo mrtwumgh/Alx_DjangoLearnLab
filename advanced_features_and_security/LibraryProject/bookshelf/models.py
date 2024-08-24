@@ -50,7 +50,7 @@ class MyUserManager(BaseUserManager):
 
 
 
-class MyUser(AbstractUser):
+class CustomUser(AbstractUser):
     date_of_birth = models.DateField()
     profile_photo = models.ImageField(upload_to='profile_pics/')
 
