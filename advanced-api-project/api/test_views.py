@@ -11,10 +11,10 @@ class BookAPITestCase(APITestCase):
         self.client = APIClient()
 
         self.book = Book.objects.create(
-            title="Sample Book",
-            author="Author Name",
-            description="Sample description",
-            published_date="2023-09-01"
+            title="Angels & Demons",
+            author="Dan Brown",
+            description="Test description",
+            published_e="2023"
         )
 
     def test_create_book_unauthenticated(self):
