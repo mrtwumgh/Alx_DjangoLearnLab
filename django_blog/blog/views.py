@@ -1,51 +1,42 @@
 from django.shortcuts import render, redirect
-from django.views.generic import FormView, View
 from blog.forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse_lazy
 
 # Create your views here.
-class RegisterView(FormView):
-    template_name = 'blog/register.html'
-    form_class = UserRegisterForm
-    success_url = reverse_lazy('login')
+def register(request):
+    if request.method == 'POST':
+        form = UserRegisterForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Your Account has been created successfully")
+            return redirect('login')
+    else:
+        form = UserRegisterForm()
 
-    def form_valid(self, form):
-        form.save()
-        messages.success(self.request, "Your Account has been created successfully")
-        return super().form_valid(form)
-    
+    return render(request, 'blog/register.html', {'form': form})
 
-
-class ProfileView(LoginRequiredMixin, View):
-    template_name = 'blog/profile.html'
-
-    def get(self, request, *args, **kwargs):
-        u_form = UserUpdateForm(instance=request.user)
-        p_form = ProfileUpdateForm(instance=request.user.profile)
-
-        context = {
-            'u_form': u_form,
-            'p_form': p_form,
-        }
-
-        return render(request, self.template_name, context)
-    
-    def post(self, request, *args, **kwargs):
-        u_form = UserUpdateForm(request.POST, request.FILES, instance=request.user)
+@login_required
+def profile(request):
+    if request.method == 'POST':
+        u_form = UserUpdateForm(request.POST, instance=request.user)
         p_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
-
         if u_form.is_valid() and p_form.is_valid():
             u_form.save()
             p_form.save()
-            messages.success(request, "Your profile has been updated successfully")
-            return redirect('profile')
-        
-        context = {
-            'u_form': u_form,
-            'p_form': p_form,
-        }
+            messages.success(request, "Your Account has been updated successfully")
+    else:
+        u_form = UserUpdateForm(instance=request.user)
+        p_form = ProfileUpdateForm(instance=request.user.profile)
 
-        return render(request, self.template_name, context)
+    context = {
+        'u_form': u_form,
+        'p_form': p_form,
+    }
+
+    return render(request, 'blog/profile.html', context)
+
+def logout_view(request):
+    logout(request)
+    return render(request, 'blog/logout.html')
