@@ -14,6 +14,10 @@ from django.views.generic import (
 from blog.models import Post, Comment
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse
+from django.db.models import Q
+from taggit.models import Tag
+
+
 # Create your views here.
 def register(request):
     if request.method == 'POST':
@@ -73,7 +77,7 @@ class PostDetailView(DetailView):
 
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
-    fields = ['title', 'content']
+    fields = ['title', 'content', 'tags']
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -81,7 +85,7 @@ class PostCreateView(LoginRequiredMixin, CreateView):
     
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
-    fields = ['title', 'content']
+    fields = ['title', 'content', 'tags']
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -137,3 +141,32 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def test_func(self):
         comment = self.get_object()
         return comment.author == self.request.user
+    
+
+def search(request):
+    query = request.GET.get('q')
+    if query:
+        posts = Post.objects.filter(
+            Q(title__icontains=query) |
+            Q(content__icontains=query) |
+            Q(tags__name__icontains=query) 
+        ).distinct()
+    else:
+        posts.objects.none()
+    
+    context = {
+        'posts': posts,
+        'query': query,
+    }
+
+    return render(request, 'blog/search_results.html', context)
+
+def posts_by_tag(request, slug):
+    tag = get_object_or_404(Tag, slug=slug)
+    posts = Post.objects.filter(tags__slug=slug)
+    context = {
+        'tags': tag,
+        'posts': posts,
+    }
+
+    return render(request, 'blog/posts_by_tag.html', context)
