@@ -161,9 +161,9 @@ def search(request):
 
     return render(request, 'blog/search_results.html', context)
 
-def posts_by_tag(request, slug):
-    tag = get_object_or_404(Tag, slug=slug)
-    posts = Post.objects.filter(tags__slug=slug)
+def posts_by_tag(request, tag_slug):
+    tag = get_object_or_404(Tag, slug=tag_slug)
+    posts = Post.objects.filter(tags__slug=tag_slug)
     context = {
         'tags': tag,
         'posts': posts,
