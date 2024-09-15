@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from blog.forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm, CommentForm
+from blog.forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm, CommentForm, PostForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
@@ -77,7 +77,7 @@ class PostDetailView(DetailView):
 
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
-    fields = ['title', 'content', 'tags']
+    form_class = PostForm
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -85,7 +85,7 @@ class PostCreateView(LoginRequiredMixin, CreateView):
     
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
-    fields = ['title', 'content', 'tags']
+    form_class = PostForm
 
     def form_valid(self, form):
         form.instance.author = self.request.user
