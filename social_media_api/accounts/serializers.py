@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from accounts.models import CustomUser
+from rest_framework.authtoken.models import Token
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -31,4 +32,8 @@ class RegistrationSerializer(serializers.ModelSerializer):
             email = validated_data['email'],
             password = validated_data['password']
         )
-        return user
+        token, created = Token.objects.get_or_create(user=user)
+        return {
+            'user': user,
+            'token': token.key
+        }

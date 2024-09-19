@@ -16,10 +16,11 @@ class RegisterAPIViewset(generics.CreateAPIView):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        token, created = Token.objects.get_or_create(user=user)
+        data = serializer.save()
+        user = data['user']
+        token = data['token']
         return Response({
-            'token': token.key,
+            'token': token,
             'user': UserSerializer(user, context=self.get_serializer_context()).data
         }, status=status.HTTP_201_CREATED)
     
